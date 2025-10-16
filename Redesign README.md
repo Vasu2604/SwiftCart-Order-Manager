@@ -406,12 +406,34 @@ python server.py --host 0.0.0.0 --port 8001
 python -c "import logging; logging.basicConfig(level=logging.DEBUG); import server"
 ```
 
-### 🌐 Environment Configuration
+### 🔐 Secret Management & Environment Configuration
 
-Create a `.env` file in the backend directory for production:
+**⚠️ IMPORTANT:** Never commit actual secrets or credentials to your repository!
+
+#### Best Practices for Secrets:
+1. **Use environment variables** for all sensitive data
+2. **Create a `.env` file** for local development (add to `.gitignore`)
+3. **Use `.env.example`** to show required variables without actual values
+4. **Set environment variables** in your deployment platform (Heroku, AWS, etc.)
+5. **Rotate secrets regularly** and use strong passwords
+
+#### For Local Development:
+
+1. **Copy the environment template:**
+   ```bash
+   cd backend
+   cp .env.example .env
+   ```
+
+2. **Edit the `.env` file** and replace placeholder values with your actual credentials:
+
+3. **Alternative: Create a `.env` file manually in the backend directory:**
 ```env
-# Database Configuration
-MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/
+# Database Configuration (REPLACE WITH YOUR ACTUAL MONGODB URI)
+# Example: mongodb+srv://your-username:your-password@your-cluster.mongodb.net/
+MONGO_URL=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/
+
+# Database name
 DB_NAME=swiftcart_orders
 
 # CORS Settings (for production)
@@ -769,8 +791,11 @@ heroku config:set REACT_APP_BACKEND_URL=https://swiftcart-backend.herokuapp.com
 
 Create a `.env` file in the backend directory:
 ```env
-# Production MongoDB (replace with your MongoDB URI)
-MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/
+# Production MongoDB (REPLACE WITH YOUR ACTUAL MONGODB URI)
+# Example: mongodb+srv://your-username:your-password@your-cluster.mongodb.net/
+MONGO_URL=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/
+
+# Database name
 DB_NAME=swiftcart_orders
 
 # CORS settings for production
