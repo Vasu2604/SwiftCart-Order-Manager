@@ -430,8 +430,8 @@ python -c "import logging; logging.basicConfig(level=logging.DEBUG); import serv
 3. **Alternative: Create a `.env` file manually in the backend directory:**
 ```env
 # Database Configuration (REPLACE WITH YOUR ACTUAL MONGODB URI)
-# Example: mongodb+srv://Vasu2604:your-password@your-cluster.mongodb.net/
-MONGO_URL=mongodb+srv://Vasu2604:your-password@your-cluster.mongodb.net/
+# Example: mongodb+srv://your-username:your-password@your-cluster.mongodb.net/
+MONGO_URL=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/
 
 # Database name
 DB_NAME=swiftcart_orders
@@ -792,8 +792,8 @@ heroku config:set REACT_APP_BACKEND_URL=https://swiftcart-backend.herokuapp.com
 Create a `.env` file in the backend directory:
 ```env
 # Production MongoDB (REPLACE WITH YOUR ACTUAL MONGODB URI)
-# Example: mongodb+srv://Vasu2604:your-password@your-cluster.mongodb.net/
-MONGO_URL=mongodb+srv://Vasu2604:your-password@your-cluster.mongodb.net/
+# Example: mongodb+srv://your-username:your-password@your-cluster.mongodb.net/
+MONGO_URL=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/
 
 # Database name
 DB_NAME=swiftcart_orders
