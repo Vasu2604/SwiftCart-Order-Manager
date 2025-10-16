@@ -9,7 +9,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-4.5-47A248?logo=mongodb&logoColor=white)](https://mongodb.com/)
 [![WebSocket](https://img.shields.io/badge/WebSocket-15.0.1-010101?logo=websocket&logoColor=white)](https://websocket.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/your-username/swiftcart-order-manager/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Vasu2604/swiftcart-order-manager/pulls)
 
 **A stunning, production-ready order management system with Neo-Aurora glassmorphism design, real-time WebSocket updates, and comprehensive metrics dashboard.**
 
@@ -338,7 +338,7 @@ boxShadow: {
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/your-username/swiftcart-order-manager.git
+git clone https://github.com/Vasu2604/swiftcart-order-manager.git
 cd swiftcart-order-manager
 ```
 
@@ -430,8 +430,8 @@ python -c "import logging; logging.basicConfig(level=logging.DEBUG); import serv
 3. **Alternative: Create a `.env` file manually in the backend directory:**
 ```env
 # Database Configuration (REPLACE WITH YOUR ACTUAL MONGODB URI)
-# Example: mongodb+srv://your-username:your-password@your-cluster.mongodb.net/
-MONGO_URL=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/
+# Example: mongodb+srv://Vasu2604:your-password@your-cluster.mongodb.net/
+MONGO_URL=mongodb+srv://Vasu2604:your-password@your-cluster.mongodb.net/
 
 # Database name
 DB_NAME=swiftcart_orders
@@ -792,8 +792,8 @@ heroku config:set REACT_APP_BACKEND_URL=https://swiftcart-backend.herokuapp.com
 Create a `.env` file in the backend directory:
 ```env
 # Production MongoDB (REPLACE WITH YOUR ACTUAL MONGODB URI)
-# Example: mongodb+srv://your-username:your-password@your-cluster.mongodb.net/
-MONGO_URL=mongodb+srv://your-username:your-password@your-cluster.mongodb.net/
+# Example: mongodb+srv://Vasu2604:your-password@your-cluster.mongodb.net/
+MONGO_URL=mongodb+srv://Vasu2604:your-password@your-cluster.mongodb.net/
 
 # Database name
 DB_NAME=swiftcart_orders
@@ -1166,7 +1166,7 @@ Click the **"Fork"** button on GitHub to create your own copy
 
 #### 2. Clone Your Fork
 ```bash
-git clone https://github.com/your-username/swiftcart-order-manager.git
+git clone https://github.com/Vasu2604/swiftcart-order-manager.git
 cd swiftcart-order-manager
 ```
 
@@ -1479,23 +1479,23 @@ SOFTWARE.
 
 | Channel | Purpose | Link |
 |---------|---------|------|
-| **🐛 Bug Reports** | Report issues and bugs | [GitHub Issues](https://github.com/your-username/swiftcart-order-manager/issues) |
-| **💡 Feature Requests** | Suggest new features | [GitHub Discussions](https://github.com/your-username/swiftcart-order-manager/discussions) |
-| **📚 Documentation** | Improve documentation | [GitHub Wiki](https://github.com/your-username/swiftcart-order-manager/wiki) |
-| **💬 General Questions** | Ask questions | [GitHub Discussions](https://github.com/your-username/swiftcart-order-manager/discussions) |
+| **🐛 Bug Reports** | Report issues and bugs | [GitHub Issues](https://github.com/Vasu2604/swiftcart-order-manager/issues) |
+| **💡 Feature Requests** | Suggest new features | [GitHub Discussions](https://github.com/Vasu2604/swiftcart-order-manager/discussions) |
+| **📚 Documentation** | Improve documentation | [GitHub Wiki](https://github.com/Vasu2604/swiftcart-order-manager/wiki) |
+| **💬 General Questions** | Ask questions | [GitHub Discussions](https://github.com/Vasu2604/swiftcart-order-manager/discussions) |
 
 ### 📧 Contact Information
 
 - **Email:** support@swiftcart.dev
-- **Project Maintainer:** [Your Name](https://github.com/your-username)
+- **Project Maintainer:** [Your Name](https://github.com/Vasu2604)
 - **Organization:** SwiftCart Team
 
 ### 🌟 Show Your Support
 
 If you found this project helpful, please give it a ⭐️!
 
-[![GitHub stars](https://img.shields.io/github/stars/your-username/swiftcart-order-manager.svg?style=social&label=Star)](https://github.com/your-username/swiftcart-order-manager)
-[![GitHub forks](https://img.shields.io/github/forks/your-username/swiftcart-order-manager.svg?style=social&label=Fork)](https://github.com/your-username/swiftcart-order-manager/fork)
+[![GitHub stars](https://img.shields.io/github/stars/Vasu2604/swiftcart-order-manager.svg?style=social&label=Star)](https://github.com/Vasu2604/swiftcart-order-manager)
+[![GitHub forks](https://img.shields.io/github/forks/Vasu2604/swiftcart-order-manager.svg?style=social&label=Fork)](https://github.com/Vasu2604/swiftcart-order-manager/fork)
 
 </div>
 
