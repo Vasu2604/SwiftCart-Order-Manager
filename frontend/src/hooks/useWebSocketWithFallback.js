@@ -1,12 +1,26 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 export const useWebSocketWithFallback = (url, options = {}) => {
-  const { enabled = true, reconnectInterval = 3000, onMessage } = options;
+  const { enabled = true, onMessage } = options;
   const [status, setStatus] = useState('disconnected');
   const [lastMessage, setLastMessage] = useState(null);
   const wsRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
   const reconnectAttemptsRef = useRef(0);
+  const connectRef = useRef(null);
+
+  const scheduleReconnect = useCallback(() => {
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+    }
+
+    const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 30000);
+    reconnectAttemptsRef.current += 1;
+
+    reconnectTimeoutRef.current = setTimeout(() => {
+      if (connectRef.current) connectRef.current();
+    }, delay);
+  }, []);
 
   const connect = useCallback(() => {
     if (!enabled || wsRef.current?.readyState === WebSocket.OPEN) return;
@@ -45,19 +59,11 @@ export const useWebSocketWithFallback = (url, options = {}) => {
         scheduleReconnect();
       }
     }
-  }, [enabled, url, onMessage]);
+  }, [enabled, url, onMessage, scheduleReconnect]);
 
-  const scheduleReconnect = useCallback(() => {
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-    }
-
-    const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 30000);
-    reconnectAttemptsRef.current += 1;
-
-    reconnectTimeoutRef.current = setTimeout(() => {
-      connect();
-    }, delay);
+  // Keep ref in sync so scheduleReconnect can call it
+  useEffect(() => {
+    connectRef.current = connect;
   }, [connect]);
 
   const disconnect = useCallback(() => {

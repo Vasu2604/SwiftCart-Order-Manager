@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, TrendingUp, Activity, Package, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, TrendingUp, Activity, Package, BarChart3, Server } from 'lucide-react';
 import { Toaster } from 'sonner';
 import AuroraBackground from './components/AuroraBackground';
 import TopNav from './components/TopNav';
-import StatTile from './components/StatTile';
-import GlassCard from './components/GlassCard';
-import LiveIndicator from './components/LiveIndicator';
 import CreateOrderPage from './pages/CreateOrderPage';
 import OrderTrackingPage from './pages/OrderTrackingPage';
 import LoadTestPage from './pages/LoadTestPage';
 import MetricsDashboard from './pages/MetricsDashboard';
+import AnalyticsDashboard from './pages/AnalyticsDashboard';
+import ServiceMonitorPage from './pages/ServiceMonitorPage';
 import { useMetrics } from './hooks/useMetrics';
 import { useWebSocketWithFallback } from './hooks/useWebSocketWithFallback';
 
 function AppRedesigned() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const { metrics, loading: metricsLoading, error: metricsError } = useMetrics(2000);
-  const { status: wsStatus, lastMessage } = useWebSocketWithFallback(
+  useWebSocketWithFallback(
     'ws://localhost:8001/api/ws/orders',
     { enabled: true, reconnectInterval: 3000 }
   );
@@ -26,6 +25,8 @@ function AppRedesigned() {
     { id: 'dashboard', label: 'Dashboard', icon: Activity },
     { id: 'create', label: 'Create Order', icon: Plus },
     { id: 'track', label: 'Track Orders', icon: Package },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'services', label: 'Services', icon: Server },
     { id: 'loadtest', label: 'Load Test', icon: TrendingUp },
   ];
 
@@ -37,6 +38,10 @@ function AppRedesigned() {
         return <CreateOrderPage />;
       case 'track':
         return <OrderTrackingPage />;
+      case 'analytics':
+        return <AnalyticsDashboard />;
+      case 'services':
+        return <ServiceMonitorPage />;
       case 'loadtest':
         return <LoadTestPage />;
       default:

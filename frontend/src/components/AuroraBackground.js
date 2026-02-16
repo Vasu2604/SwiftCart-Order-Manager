@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 
 const AuroraBackground = () => {
@@ -37,14 +38,14 @@ const AuroraBackground = () => {
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
       ctx.lineWidth = 1;
       const gridSize = 40;
-      
+
       for (let x = 0; x <= canvas.width; x += gridSize) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, canvas.height);
         ctx.stroke();
       }
-      
+
       for (let y = 0; y <= canvas.height; y += gridSize) {
         ctx.beginPath();
         ctx.moveTo(0, y);
@@ -58,7 +59,7 @@ const AuroraBackground = () => {
         const dx = mouseX - orb.x;
         const dy = mouseY - orb.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        
+
         if (distance < 200) {
           orb.x += (dx / distance) * 2;
           orb.y += (dy / distance) * 2;
@@ -109,7 +110,7 @@ const AuroraBackground = () => {
         className="absolute inset-0 w-full h-full"
         style={{ background: 'transparent' }}
       />
-      <div 
+      <div
         className="absolute inset-0 opacity-30"
         style={{
           backgroundImage: `

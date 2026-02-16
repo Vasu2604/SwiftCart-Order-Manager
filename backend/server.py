@@ -15,6 +15,15 @@ import json
 import time
 import random
 
+# Kafka integration
+from kafka_config import producer as kafka_producer, TOPIC_ORDERS, TOPIC_ORDER_EVENTS
+
+# Microservices
+from services.inventory_service import InventoryService
+from services.payment_service import PaymentService
+from services.notification_service import NotificationService
+from services.analytics_service import AnalyticsService
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
@@ -135,6 +144,12 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
+# Initialize microservices
+inventory_service = InventoryService()
+payment_service = PaymentService()
+notification_service = NotificationService()
+analytics_service = AnalyticsService()
+
 # Create the main app
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
@@ -212,14 +227,15 @@ async def ensure_indexes():
     # In-memory DB doesn't need indexes for testing
     pass
 
-# Routes
+# ─── Routes ──────────────────────────────────────────────────
+
 @api_router.get("/")
 async def root():
     return {"message": "SwiftCart Order Manager API", "status": "operational"}
 
 @api_router.post("/orders", response_model=Order)
 async def create_order(order_input: OrderCreate):
-    """Order Ingest Service - Idempotent order submission"""
+    """Order Ingest Service - Idempotent order submission with Kafka event publishing"""
     start_time = time.time()
     
     # Generate or use provided idempotency key
@@ -257,7 +273,7 @@ async def create_order(order_input: OrderCreate):
         updated_at=now
     )
     
-    # Insert into orders_queue (simulates Kafka producer)
+    # Insert into orders_queue
     queue_doc = order.model_dump()
     queue_doc['created_at'] = queue_doc['created_at'].isoformat()
     queue_doc['updated_at'] = queue_doc['updated_at'].isoformat()
@@ -272,6 +288,22 @@ async def create_order(order_input: OrderCreate):
         })
         await db.insert_one("orders_queue", queue_doc)
         
+        # ══════════════════════════════════════════════════════
+        # KAFKA: Publish order event to 'orders' topic
+        # ══════════════════════════════════════════════════════
+        kafka_event = {
+            **queue_doc,
+            "event_type": "order_created",
+        }
+        published = kafka_producer.publish(TOPIC_ORDERS, kafka_event, key=order_id)
+
+        if published:
+            logger.info(f"📤 Order {order_id} published to Kafka topic '{TOPIC_ORDERS}'")
+        else:
+            # Fallback: feed directly to analytics service
+            analytics_service.record_order(kafka_event)
+            logger.info(f"📝 Order {order_id} recorded in analytics (Kafka fallback)")
+
         # Track ingestion time
         ingestion_time = (time.time() - start_time) * 1000
         logger.info(f"Order {order_id} ingested in {ingestion_time:.2f}ms")
@@ -407,6 +439,52 @@ async def run_load_test(request: LoadTestRequest):
         throughput_per_sec=throughput
     )
 
+# ─── Service Health & Analytics Routes ────────────────────────
+
+@api_router.get("/services/health")
+async def get_services_health():
+    """Get health status of all microservices and Kafka broker."""
+    return {
+        "kafka": {
+            "connected": kafka_producer.is_connected,
+            "broker": os.environ.get('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092'),
+        },
+        "services": {
+            "inventory": inventory_service.metrics,
+            "payment": payment_service.metrics,
+            "notification": notification_service.metrics,
+            "analytics": analytics_service.metrics,
+        },
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+@api_router.get("/analytics/summary")
+async def get_analytics_summary():
+    """Get real-time analytics summary from the analytics service."""
+    return analytics_service.get_summary()
+
+@api_router.get("/analytics/orders-per-minute")
+async def get_orders_per_minute():
+    """Get orders per minute time-series data."""
+    return analytics_service.get_orders_per_minute_history()
+
+@api_router.get("/analytics/top-products")
+async def get_top_products(limit: int = 10):
+    """Get top products by quantity in the last 5 minutes."""
+    return analytics_service.get_top_products(limit)
+
+@api_router.get("/analytics/revenue-by-region")
+async def get_revenue_by_region():
+    """Get revenue breakdown by region."""
+    return analytics_service.get_revenue_by_region()
+
+@api_router.get("/analytics/anomalies")
+async def get_anomalies(limit: int = 20):
+    """Get recent anomalies detected by the analytics engine."""
+    return analytics_service.get_anomalies(limit)
+
+# ─── WebSocket ───────────────────────────────────────────────
+
 @app.websocket("/api/ws/orders")
 async def websocket_endpoint(websocket: WebSocket):
     """WebSocket for real-time order updates"""
@@ -466,7 +544,7 @@ async def order_processor_worker():
                 # Mark as processed in queue
                 await db.update_one("orders_queue", {"order_id": order_id}, {"$set": {"processed": True}})
 
-                # Publish event (simulates Kafka producer to order-events topic)
+                # Publish event to Kafka order-events topic
                 event = OrderEvent(
                     event_id=generate_event_id(),
                     order_id=order_id,
@@ -478,6 +556,9 @@ async def order_processor_worker():
                 event_doc = event.model_dump()
                 event_doc['timestamp'] = event_doc['timestamp'].isoformat()
                 await db.insert_one("order_events", event_doc)
+
+                # Publish event to Kafka
+                kafka_producer.publish(TOPIC_ORDER_EVENTS, event_doc, key=order_id)
 
                 # Broadcast final status
                 await manager.broadcast({
@@ -503,16 +584,38 @@ async def startup_event():
     
     # Ensure indexes
     await ensure_indexes()
+
+    # Connect Kafka producer
+    kafka_connected = kafka_producer.connect()
+    if kafka_connected:
+        logger.info("✅ Kafka producer connected — event-driven mode active")
+    else:
+        logger.info("⚠️ Kafka unavailable — running in fallback mode (all features still work)")
+
+    # Start consumer microservices
+    inventory_service.start(kafka_producer)
+    payment_service.start(kafka_producer)
+    notification_service.start(kafka_producer)
+    analytics_service.start(kafka_producer)
     
     # Start background worker
     asyncio.create_task(order_processor_worker())
-    logger.info("SwiftCart Order Manager started")
+    logger.info("🚀 SwiftCart Order Manager started with microservices")
 
 @app.on_event("shutdown")
 async def shutdown_event():
     global worker_running
     worker_running = False
-    client.close()
+
+    # Stop microservices
+    inventory_service.stop()
+    payment_service.stop()
+    notification_service.stop()
+    analytics_service.stop()
+
+    # Close Kafka producer
+    kafka_producer.close()
+
     logger.info("SwiftCart Order Manager shutdown")
 
 # Include router

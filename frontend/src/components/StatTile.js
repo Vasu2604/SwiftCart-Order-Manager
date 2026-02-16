@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, useSpring, useTransform } from 'framer-motion';
+import { motion, useSpring } from 'framer-motion';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 const StatTile = ({ label, value, unit, icon: Icon, color = 'violet', trend, loading = false }) => {
